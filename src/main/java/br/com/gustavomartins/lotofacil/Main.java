@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
@@ -31,14 +30,11 @@ public class Main {
             }
 
             switch (input) {
-                case "saudar":
-                    out.println("Olá! Como posso ajudar?");
-                    break;
-                case "excel":
+                case "lotofacil":
                     leituraExcel(scanner);
                     break;
                 case "ajuda":
-                    out.println("Comandos disponíveis: saudar, ajuda, sair");
+                    out.println("Comandos disponíveis: lotofacil, ajuda, sair");
                     break;
                 default:
                     out.println("Comando não reconhecido: " + input);
@@ -49,35 +45,44 @@ public class Main {
     }
 
     private static void leituraExcel(Scanner scanner) {
-        out.println("Qual o caminho para o arquivo?");
-        out.print("> ");
-        String input = scanner.nextLine().trim();
-        try(
-                FileInputStream file = new FileInputStream(new File(input));
-                Workbook workbook = new XSSFWorkbook(file);
-        ){
+        String input = chamadaComando(scanner, "Qual o caminho para o arquivo?");
 
+        try(FileInputStream file = new FileInputStream(input);
+            Workbook workbook = new XSSFWorkbook(file)){
             Sheet sheet = workbook.getSheetAt(0);
-            Map<Integer, List<String>> data = new HashMap<>();
-            Map<Integer, List<Cell>> concursos = new HashMap<>();
-            int i = 0;
+            Map<Integer, List<Integer>> concursos = new HashMap<>();
             sheet.removeRow(sheet.getRow(sheet.getFirstRowNum()));
-            for (Row row : sheet) {
-                data.put(i, new ArrayList<>());
-                List<Cell> numerosSorteados = new ArrayList<>();
-                for (Cell cell : row) {
-                    if(String.valueOf(cell.getColumnIndex()).matches("^(1[0-6]|[23456789])$")){
-                        numerosSorteados.add(cell);
-                    }
-                }
-                concursos.put(row.getRowNum(),numerosSorteados);
-                i++;
-            }
+            mapConcursos(sheet, concursos);
             //Mostra Ultimo concurso
             out.println(concursos.get(concursos.size()));
         }   catch (IOException ex){
             out.print(ex.getMessage());
         }
 
+    }
+
+    private static void mapConcursos(Sheet sheet, Map<Integer, List<Integer>> concursos) {
+        for (Row row : sheet) {
+            List<Integer> numerosSorteados = new ArrayList<>();
+            sanitizaCelulas(row);
+            for (Cell cell : row) {
+                    numerosSorteados.add((int) cell.getNumericCellValue());
+            }
+            concursos.put(row.getRowNum(),numerosSorteados);
+        }
+    }
+
+    private static void sanitizaCelulas(Row row) {
+        for(int i = 0; i <= row.getLastCellNum(); i++){
+            if(!String.valueOf(row.getCell(i).getColumnIndex()).matches("^(1[0-6]|[23456789])$")){
+                row.removeCell(row.getCell(i));
+            }
+        }
+    }
+
+    private static String chamadaComando(Scanner scanner, String textoDescricao) {
+        out.println(textoDescricao);
+        out.print("> ");
+        return scanner.nextLine().trim();
     }
 }
