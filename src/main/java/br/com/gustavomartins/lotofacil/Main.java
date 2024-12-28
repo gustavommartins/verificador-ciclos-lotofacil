@@ -14,6 +14,9 @@ import static java.lang.System.in;
 import static java.lang.System.out;
 
 public class Main {
+
+    private static Map<Integer, List<Integer>> concursos = new HashMap<>();
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(in);
 
@@ -45,12 +48,16 @@ public class Main {
     }
 
     private static void leituraExcel(Scanner scanner) {
+        if(!concursos.isEmpty()){
+            out.println(concursos.get(concursos.size()));
+            return;
+        }
+
         String input = chamadaComando(scanner, "Qual o caminho para o arquivo?");
 
         try(FileInputStream file = new FileInputStream(input);
             Workbook workbook = new XSSFWorkbook(file)){
             Sheet sheet = workbook.getSheetAt(0);
-            Map<Integer, List<Integer>> concursos = new HashMap<>();
             sheet.removeRow(sheet.getRow(sheet.getFirstRowNum()));
             mapConcursos(sheet, concursos);
             //Mostra Ultimo concurso
