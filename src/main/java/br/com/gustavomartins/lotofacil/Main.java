@@ -1,7 +1,5 @@
 package br.com.gustavomartins.lotofacil;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -10,12 +8,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static java.lang.System.in;
-import static java.lang.System.out;
+import static java.lang.System.*;
 
 public class Main {
 
-    private static Map<Integer, List<Integer>> concursos = new HashMap<>();
+    private static final Map<Integer, List<Integer>> concursos = new TreeMap<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(in);
@@ -49,6 +46,7 @@ public class Main {
 
     private static void leituraExcel(Scanner scanner) {
         if(!concursos.isEmpty()){
+            out.println("Trazendo dados da memória...");
             out.println(concursos.get(concursos.size()));
             return;
         }
@@ -58,8 +56,7 @@ public class Main {
         try(FileInputStream file = new FileInputStream(input);
             Workbook workbook = new XSSFWorkbook(file)){
             Sheet sheet = workbook.getSheetAt(0);
-            sheet.removeRow(sheet.getRow(sheet.getFirstRowNum()));
-            mapConcursos(sheet, concursos);
+            mapConcursos(sheet);
             //Mostra Ultimo concurso
             out.println(concursos.get(concursos.size()));
         }   catch (IOException ex){
@@ -68,23 +65,18 @@ public class Main {
 
     }
 
-    private static void mapConcursos(Sheet sheet, Map<Integer, List<Integer>> concursos) {
-        for (Row row : sheet) {
+    private static void mapConcursos(Sheet sheet) {
+        sheet.iterator().forEachRemaining(row -> {
+            if(row.getRowNum() == 0) return;
             List<Integer> numerosSorteados = new ArrayList<>();
-            sanitizaCelulas(row);
-            for (Cell cell : row) {
+            row.cellIterator().forEachRemaining(cell -> {
+                if(numerosSorteados.size() == 15) return;
+                if(String.valueOf(cell.getColumnIndex()).matches("^(1[0-6]|[23456789])$")){
                     numerosSorteados.add((int) cell.getNumericCellValue());
-            }
-            concursos.put(row.getRowNum(),numerosSorteados);
-        }
-    }
-
-    private static void sanitizaCelulas(Row row) {
-        for(int i = 0; i <= row.getLastCellNum(); i++){
-            if(!String.valueOf(row.getCell(i).getColumnIndex()).matches("^(1[0-6]|[23456789])$")){
-                row.removeCell(row.getCell(i));
-            }
-        }
+                }
+            });
+            concursos.put(row.getRowNum(), numerosSorteados);
+        });
     }
 
     private static String chamadaComando(Scanner scanner, String textoDescricao) {
