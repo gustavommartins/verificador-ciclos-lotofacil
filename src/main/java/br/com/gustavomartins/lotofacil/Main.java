@@ -8,11 +8,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static java.lang.System.*;
+import static java.lang.System.in;
+import static java.lang.System.out;
 
 public class Main {
 
     private static final Map<Integer, List<Integer>> concursos = new TreeMap<>();
+    private static final Map<Integer, Integer> ciclos = new TreeMap<>();
+    private static final HashSet<Integer> numerosNaoSorteados = new HashSet<>(createSetNumerosNaoSorteados());
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(in);
@@ -57,12 +60,13 @@ public class Main {
             Workbook workbook = new XSSFWorkbook(file)){
             Sheet sheet = workbook.getSheetAt(0);
             mapConcursos(sheet);
-            //Mostra Ultimo concurso
+            leituraCiclos();
+
             out.println(concursos.get(concursos.size()));
+            out.println(ciclos.get(ciclos.size()));
         }   catch (IOException ex){
             out.print(ex.getMessage());
         }
-
     }
 
     private static void mapConcursos(Sheet sheet) {
@@ -77,6 +81,24 @@ public class Main {
             });
             concursos.put(row.getRowNum(), numerosSorteados);
         });
+    }
+
+    private static void leituraCiclos() {
+        concursos.forEach((concurso, lista) -> {
+            lista.forEach(numerosNaoSorteados::remove);
+            if (numerosNaoSorteados.isEmpty()) {
+                numerosNaoSorteados.addAll(createSetNumerosNaoSorteados());
+                ciclos.put(ciclos.size() + 1, concurso);
+            }
+        });
+    }
+
+    private static HashSet<Integer> createSetNumerosNaoSorteados() {
+        return new HashSet<>(Arrays.asList(
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                21, 22, 23, 24, 25
+        ));
     }
 
     private static String chamadaComando(Scanner scanner, String textoDescricao) {
