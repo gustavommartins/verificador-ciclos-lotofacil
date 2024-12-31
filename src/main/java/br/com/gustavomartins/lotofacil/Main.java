@@ -36,6 +36,9 @@ public class Main {
                 case "lotofacil":
                     leituraExcel(scanner);
                     break;
+                case "Numeros faltantes":
+                    getNumerosNaoSorteados();
+                    break;
                 case "ajuda":
                     out.println("Comandos disponíveis: lotofacil, ajuda, sair");
                     break;
@@ -45,6 +48,10 @@ public class Main {
             }
         }
         scanner.close();
+    }
+
+    private static void getNumerosNaoSorteados() {
+        out.printf("Números que ainda faltam a ser sorteados no atual ciclo (%s) = %s%n", ciclos.size(), numerosNaoSorteados);
     }
 
     private static void leituraExcel(Scanner scanner) {
@@ -62,8 +69,7 @@ public class Main {
             mapConcursos(sheet);
             leituraCiclos();
 
-            out.println(concursos.get(concursos.size()));
-            out.println(ciclos.get(ciclos.size()));
+            getNumerosNaoSorteados();
         }   catch (IOException ex){
             out.print(ex.getMessage());
         }
