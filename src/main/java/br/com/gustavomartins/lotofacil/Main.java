@@ -1,14 +1,12 @@
 package br.com.gustavomartins.lotofacil;
 
+import br.com.gustavomartins.lotofacil.services.DownloadService;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 
 import static java.lang.System.in;
@@ -37,7 +35,7 @@ public class Main {
 
             switch (input) {
                 case "lotofacil":
-                    leituraExcel(scanner);
+                    leituraExcel();
                     break;
                 case "Numeros faltantes":
                     getNumerosNaoSorteados();
@@ -57,14 +55,14 @@ public class Main {
         out.printf("Números que ainda faltam a ser sorteados no atual ciclo (%s) = %s%n", ciclos.size(), numerosNaoSorteados);
     }
 
-    private static void leituraExcel(Scanner scanner) throws IOException {
+    private static void leituraExcel() throws IOException {
         if(!concursos.isEmpty()){
             out.println("Trazendo dados da memória...");
             out.println(concursos.get(concursos.size()));
             return;
         }
 
-        downloadFile();
+        new DownloadService().downloadFile();
 
         String input = "./src/main/resources/loteria/lotofacil.xlsx";
 
@@ -112,53 +110,6 @@ public class Main {
         ));
     }
 
-    private static void downloadFile() throws IOException {
-        HttpURLConnection connection = null;
-        try(BufferedReader br = new BufferedReader(new FileReader("./src/main/resources/application.yml"))) {
 
-            Properties properties = new Properties();
-            properties.load(br);
-
-            String lotofacilUrl = properties.getProperty("lotofacilUrl");
-            String filePath = "./src/main/resources/loteria/lotofacil.xlsx";
-            File outputFile = new File(filePath);
-
-            // Verifica e cria diretórios
-            File parentDir = outputFile.getParentFile();
-            if (parentDir != null && !parentDir.exists()) {
-                parentDir.mkdirs();
-            }
-
-            URL url = new URI(lotofacilUrl).toURL();
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(10000); // Tempo de espera para conectar (10s)
-            connection.setReadTimeout(10000); // Tempo de espera para leitura (10s)
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (InputStream inputStream = new BufferedInputStream(connection.getInputStream());
-                     FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        fileOutputStream.write(buffer, 0, bytesRead);
-                    }
-
-                    System.out.println("Arquivo baixado com sucesso: " + "lotofacil.xlsx");
-                }
-            } else {
-                System.err.println("Erro ao baixar o arquivo. Código de resposta HTTP: " + responseCode);
-            }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
 
 }
