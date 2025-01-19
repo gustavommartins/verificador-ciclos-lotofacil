@@ -1,5 +1,6 @@
 package br.com.gustavomartins.lotofacil;
 
+import br.com.gustavomartins.lotofacil.services.DownloadService;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -17,7 +18,7 @@ public class Main {
     private static final Map<Integer, Integer> ciclos = new TreeMap<>();
     private static final HashSet<Integer> numerosNaoSorteados = new HashSet<>(createSetNumerosNaoSorteados());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(in);
 
         out.println("Bem-vindo à CLI!");
@@ -34,7 +35,7 @@ public class Main {
 
             switch (input) {
                 case "lotofacil":
-                    leituraExcel(scanner);
+                    leituraExcel();
                     break;
                 case "Numeros faltantes":
                     getNumerosNaoSorteados();
@@ -54,14 +55,16 @@ public class Main {
         out.printf("Números que ainda faltam a ser sorteados no atual ciclo (%s) = %s%n", ciclos.size(), numerosNaoSorteados);
     }
 
-    private static void leituraExcel(Scanner scanner) {
+    private static void leituraExcel() throws IOException {
         if(!concursos.isEmpty()){
             out.println("Trazendo dados da memória...");
             out.println(concursos.get(concursos.size()));
             return;
         }
 
-        String input = chamadaComando(scanner, "Qual o caminho para o arquivo?");
+        new DownloadService().downloadFile();
+
+        String input = "./src/main/resources/loteria/lotofacil.xlsx";
 
         try(FileInputStream file = new FileInputStream(input);
             Workbook workbook = new XSSFWorkbook(file)){
@@ -107,9 +110,6 @@ public class Main {
         ));
     }
 
-    private static String chamadaComando(Scanner scanner, String textoDescricao) {
-        out.println(textoDescricao);
-        out.print("> ");
-        return scanner.nextLine().trim();
-    }
+
+
 }
