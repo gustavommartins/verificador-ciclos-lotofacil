@@ -12,7 +12,7 @@ Nela, é possível visualizar o último ciclo completo e o ciclo em andamento. V
 
 - [x] Gerar tabela de ciclos da Lotofácil.
 - [ ] Listar os concursos separadamente ou em lista
-- [ ] Baixar automaticamente a planilha da Lotofácil diretamente do site da Caixa.
+- [x] Baixar automaticamente a planilha da Lotofácil diretamente do site da Caixa.
 - [ ] Gerar jogos baseados nos números faltantes do ciclo.
 
 ## Como usar
