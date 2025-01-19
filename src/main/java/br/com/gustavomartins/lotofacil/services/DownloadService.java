@@ -1,10 +1,9 @@
 package br.com.gustavomartins.lotofacil.services;
 
+import br.com.gustavomartins.lotofacil.exceptions.DownloadeException;
+
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Timestamp;
@@ -13,55 +12,68 @@ import java.util.Properties;
 
 public class DownloadService {
 
-    public void downloadFile() throws IOException {
+    public static final String SRC_MAIN_RESOURCES_LOTERIA_LOTOFACIL_XLSX = "./src/main/resources/loteria/lotofacil.xlsx";
+
+    public void downloadFile() {
         HttpURLConnection connection = null;
-
-        String filePath = "./src/main/resources/loteria/lotofacil.xlsx";
-        File outputFile = new File(filePath);
-
-        if(getDataDeCriacaoArquivo(outputFile).isEqual(LocalDate.now())){
-            return;
-        }
 
         try(BufferedReader br = new BufferedReader(new FileReader("./src/main/resources/application.yml"))) {
 
-            Properties properties = new Properties();
-            properties.load(br);
+            File outputFile = new File(SRC_MAIN_RESOURCES_LOTERIA_LOTOFACIL_XLSX);
 
-            String lotofacilUrl = properties.getProperty("lotofacilUrl");
+            if (deveBaixarArquivo(outputFile)) return;
 
-            // Verifica e cria diretórios
-            File parentDir = outputFile.getParentFile();
-            if (parentDir != null && !parentDir.exists()) {
-                parentDir.mkdirs();
-            }
+            deveCriarDiretorios(outputFile);
 
-            URL url = new URI(lotofacilUrl).toURL();
+            URL url = new URI(loadProperties(br).getProperty("lotofacilUrl")).toURL();
             connection = createConnection(url);
 
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (InputStream inputStream = new BufferedInputStream(connection.getInputStream());
-                     FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        fileOutputStream.write(buffer, 0, bytesRead);
-                    }
-
-                    System.out.println("Arquivo baixado com sucesso: " + "lotofacil.xlsx");
-                }
+                download(connection);
             } else {
                 System.err.println("Erro ao baixar o arquivo. Código de resposta HTTP: " + responseCode);
             }
-        } catch (URISyntaxException e) {
-            throw new IOException(e);
-        } finally {
+        } catch (URISyntaxException | IOException e) {
+            throw new DownloadeException(e);
+        }  finally {
             if (connection != null) {
                 connection.disconnect();
             }
+        }
+    }
+
+    private static void deveCriarDiretorios(File outputFile) {
+        File parentDir = outputFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+    }
+
+    private static Properties loadProperties(BufferedReader br) throws IOException {
+        Properties properties = new Properties();
+        properties.load(br);
+        return properties;
+    }
+
+    private static boolean deveBaixarArquivo(File outputFile) throws IOException {
+        return outputFile.exists() && getDataDeCriacaoArquivo(outputFile).isEqual(LocalDate.now());
+    }
+
+    private static void download(HttpURLConnection connection) {
+        try (InputStream inputStream = new BufferedInputStream(connection.getInputStream());
+             FileOutputStream fileOutputStream = new FileOutputStream(DownloadService.SRC_MAIN_RESOURCES_LOTERIA_LOTOFACIL_XLSX)) {
+
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                fileOutputStream.write(buffer, 0, bytesRead);
+            }
+
+            System.out.println("Arquivo baixado com sucesso: " + "lotofacil.xlsx");
+        } catch (IOException e) {
+            throw new DownloadeException(e);
         }
     }
 
