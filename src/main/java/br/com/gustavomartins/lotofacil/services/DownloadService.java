@@ -1,17 +1,14 @@
 package br.com.gustavomartins.lotofacil.services;
 
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.File;
-import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Properties;
 
 public class DownloadService {
@@ -19,15 +16,19 @@ public class DownloadService {
     public void downloadFile() throws IOException {
         HttpURLConnection connection = null;
 
+        String filePath = "./src/main/resources/loteria/lotofacil.xlsx";
+        File outputFile = new File(filePath);
+
+        if(getDataDeCriacaoArquivo(outputFile).isEqual(LocalDate.now())){
+            return;
+        }
+
         try(BufferedReader br = new BufferedReader(new FileReader("./src/main/resources/application.yml"))) {
 
             Properties properties = new Properties();
             properties.load(br);
 
             String lotofacilUrl = properties.getProperty("lotofacilUrl");
-
-            String filePath = "./src/main/resources/loteria/lotofacil.xlsx";
-            File outputFile = new File(filePath);
 
             // Verifica e cria diretórios
             File parentDir = outputFile.getParentFile();
@@ -62,6 +63,11 @@ public class DownloadService {
                 connection.disconnect();
             }
         }
+    }
+
+    private static LocalDate getDataDeCriacaoArquivo(File outputFile) throws IOException {
+        BasicFileAttributes fileAttributes = Files.readAttributes(outputFile.toPath(), BasicFileAttributes.class);
+        return new Timestamp(fileAttributes.creationTime().toMillis()).toLocalDateTime().toLocalDate();
     }
 
     private HttpURLConnection createConnection(URL url) throws IOException {
