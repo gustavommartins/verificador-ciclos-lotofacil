@@ -1,6 +1,7 @@
 package br.com.gustavomartins.lotofacil;
 
 import br.com.gustavomartins.lotofacil.services.DownloadService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -33,12 +34,12 @@ public class Main {
                 break;
             }
 
-            switch (input) {
+            switch (input.toLowerCase()) {
                 case "lotofacil":
                     leituraExcel();
                     break;
-                case "Numeros faltantes":
-                    getNumerosNaoSorteados();
+                case "sorteios":
+                    getUltimosSorteios();
                     break;
                 case "ajuda":
                     out.println("Comandos disponíveis: lotofacil, ajuda, sair");
@@ -51,14 +52,22 @@ public class Main {
         scanner.close();
     }
 
+    private static void getUltimosSorteios() {
+        out.println("Buscando os 4 últimos sorteios...");
+        out.println("-".repeat(78));
+        for(int i = 0; i < 4; i++){
+            out.println(StringUtils.rightPad(String.format("| Concurso: %s | %s ", concursos.size() - i, concursos.get(concursos.size() - i).toString()),77) + "|");
+            out.println("-".repeat(78));
+        }
+    }
+
     private static void getNumerosNaoSorteados() {
-        out.printf("Números que ainda faltam a ser sorteados no atual ciclo (%s) = %s%n", ciclos.size(), numerosNaoSorteados);
+        out.printf("Números que ainda faltam a ser sorteados no atual ciclo (%s) = %s%n", ciclos.size() + 1, numerosNaoSorteados);
     }
 
     private static void leituraExcel() throws IOException {
         if(!concursos.isEmpty()){
-            out.println("Trazendo dados da memória...");
-            out.println(concursos.get(concursos.size()));
+            getNumerosNaoSorteados();
             return;
         }
 
@@ -71,7 +80,6 @@ public class Main {
             Sheet sheet = workbook.getSheetAt(0);
             mapConcursos(sheet);
             leituraCiclos();
-
             getNumerosNaoSorteados();
         }   catch (IOException ex){
             out.print(ex.getMessage());

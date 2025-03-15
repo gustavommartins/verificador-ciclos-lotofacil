@@ -17,15 +17,15 @@ public class DownloadService {
     public void downloadFile() {
         HttpURLConnection connection = null;
 
-        try(BufferedReader br = new BufferedReader(new FileReader("./src/main/resources/application.yml"))) {
-
+        try {
             File outputFile = new File(SRC_MAIN_RESOURCES_LOTERIA_LOTOFACIL_XLSX);
 
             if (deveBaixarArquivo(outputFile)) return;
 
             deveCriarDiretorios(outputFile);
 
-            URL url = new URI(loadProperties(br).getProperty("lotofacilUrl")).toURL();
+            URL url = new URI("https://servicebus2.caixa.gov.br/portaldeloterias/api/resultados/download?modalidade=lotofacil").toURL();
+
             connection = createConnection(url);
 
             int responseCode = connection.getResponseCode();
