@@ -1,6 +1,6 @@
 package br.com.gustavomartins.lotofacil;
 
-import br.com.gustavomartins.lotofacil.modalidades.Lotofacil;
+import br.com.gustavomartins.lotofacil.services.LotofacilService;
 
 import java.util.Scanner;
 
@@ -28,7 +28,7 @@ public class Main {
 
             switch (input.toLowerCase()) {
                 case "1":
-                    new Lotofacil().funcionalidades();
+                    new LotofacilService().funcionalidades();
                     break;
                 case "help":
                     out.println("Comandos disponíveis: 1 (Lotofácil), help, sair");

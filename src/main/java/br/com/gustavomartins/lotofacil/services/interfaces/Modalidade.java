@@ -1,4 +1,4 @@
-package br.com.gustavomartins.lotofacil.contratos;
+package br.com.gustavomartins.lotofacil.services.interfaces;
 
 import org.apache.commons.lang3.StringUtils;
 

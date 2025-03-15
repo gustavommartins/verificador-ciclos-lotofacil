@@ -1,7 +1,6 @@
-package br.com.gustavomartins.lotofacil.modalidades;
+package br.com.gustavomartins.lotofacil.services;
 
-import br.com.gustavomartins.lotofacil.contratos.Modalidade;
-import br.com.gustavomartins.lotofacil.services.DownloadService;
+import br.com.gustavomartins.lotofacil.services.interfaces.Modalidade;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,7 +12,7 @@ import java.util.*;
 import static java.lang.System.in;
 import static java.lang.System.out;
 
-public class Lotofacil implements Modalidade {
+public class LotofacilService implements Modalidade {
 
     private static final Map<Integer, List<Integer>> concursos = new TreeMap<>();
     private static final Map<Integer, Integer> ciclos = new TreeMap<>();
