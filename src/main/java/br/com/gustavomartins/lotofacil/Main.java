@@ -23,6 +23,8 @@ public class Main {
         Scanner scanner = new Scanner(in);
 
         out.println("Bem-vindo à CLI!");
+        out.println("Digite apenas o número da modalidades:");
+        out.println("1 - Lotofácil");
         out.println("Digite 'sair' para encerrar o programa.");
 
         while (true) {
@@ -35,14 +37,11 @@ public class Main {
             }
 
             switch (input.toLowerCase()) {
-                case "lotofacil":
+                case "1":
                     leituraExcel();
                     break;
-                case "sorteios":
-                    getUltimosSorteios();
-                    break;
-                case "ajuda":
-                    out.println("Comandos disponíveis: lotofacil, ajuda, sair");
+                case "help":
+                    out.println("Comandos disponíveis: 1 (Lotofácil), help, sair");
                     break;
                 default:
                     out.println("Comando não reconhecido: " + input);
