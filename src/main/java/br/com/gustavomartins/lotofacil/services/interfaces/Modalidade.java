@@ -2,10 +2,9 @@ package br.com.gustavomartins.lotofacil.services.interfaces;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static java.lang.System.in;
 import static java.lang.System.out;
 
 public interface Modalidade {
@@ -22,6 +21,28 @@ public interface Modalidade {
             out.println("-".repeat(78));
         }
     }
+
+    default void getSorteioSelecionado(Map<Integer, List<Integer>> concursos){
+        Scanner scanner = new Scanner(in);
+        out.printf("Selecione um sorteio ele vai de %s até %s%n", 1, concursos.size());
+        out.print("> ");
+        String input = scanner.nextLine().trim();
+        out.printf("Buscando pelo sorteio %s%n", input);
+        try{
+            List<Integer> concurso = concursos.get(Integer.valueOf(input));
+            if(Objects.nonNull(concurso)){
+                out.println(concurso);
+            } else {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            out.println("Sorteio pesquisado não existe ou ainda não aconteceu!");
+        } catch (NumberFormatException ex){
+            out.println("Por favor digite apenas números!");
+        } catch (Exception ex) {
+            out.println("Não foi possível pesquisar pelo sorteio selecionado!");
+        }
+    };
 
     default void getAtualCiclo(int ciclo, HashSet<Integer> numerosNaoSorteados) {
         out.printf("Números que ainda faltam a ser sorteados no atual ciclo (%s) = %s%n", ciclo, numerosNaoSorteados);

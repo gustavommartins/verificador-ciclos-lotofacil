@@ -27,6 +27,7 @@ public class LotofacilService implements Modalidade {
         out.println("Digite apenas o número da funcionalidade:");
         out.println("1 - Ciclo atual");
         out.println("2 - últimos 5 sorteios");
+        out.println("3 - Selecione um sorteio em específico");
         out.println("Digite 'sair' para encerrar o programa.");
 
         while (true) {
@@ -44,6 +45,9 @@ public class LotofacilService implements Modalidade {
                     break;
                 case "2":
                     getUltimosSorteios(concursos);
+                    break;
+                case "3":
+                    getSorteioSelecionado(concursos);
                     break;
                 case "help":
                     out.println("Comandos disponíveis: 1, 2, help, sair");
