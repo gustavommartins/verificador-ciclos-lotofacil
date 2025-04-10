@@ -21,11 +21,6 @@ public class Main {
             out.print("> ");
             String input = scanner.nextLine().trim();
 
-            if ("sair".equalsIgnoreCase(input)) {
-                out.println("Encerrando...");
-                break;
-            }
-
             switch (input.toLowerCase()) {
                 case "1":
                     new LotofacilService().funcionalidades();
@@ -33,12 +28,14 @@ public class Main {
                 case "help":
                     out.println("Comandos disponíveis: 1 (Lotofácil), help, sair");
                     break;
+                case "sair":
+                    out.println("Encerrando...");
+                    return;
                 default:
                     out.println("Comando não reconhecido: " + input);
                     break;
             }
         }
-        scanner.close();
     }
 
 
