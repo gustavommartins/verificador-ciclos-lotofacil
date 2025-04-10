@@ -79,7 +79,7 @@ public class DownloadService {
 
     private static LocalDate getDataDeCriacaoArquivo(File outputFile) throws IOException {
         BasicFileAttributes fileAttributes = Files.readAttributes(outputFile.toPath(), BasicFileAttributes.class);
-        return new Timestamp(fileAttributes.creationTime().toMillis()).toLocalDateTime().toLocalDate();
+        return new Timestamp(fileAttributes.lastModifiedTime().toMillis()).toLocalDateTime().toLocalDate();
     }
 
     private HttpURLConnection createConnection(URL url) throws IOException {
