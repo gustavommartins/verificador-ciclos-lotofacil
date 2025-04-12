@@ -55,6 +55,11 @@ public class LotofacilService implements Modalidade {
                 default:
                     out.println("Comando não reconhecido: " + input);
                     break;
+                case "1" -> getAtualCiclo(ciclos.size() + 1, numerosNaoSorteados);
+                case "2" -> getUltimosSorteios(concursos);
+                case "3" -> getSorteioSelecionado(concursos);
+                case "help" -> out.println("Comandos disponíveis: 1, 2, help, sair");
+                default -> out.println("Comando não reconhecido: " + input);
             }
         }
         scanner.close();
