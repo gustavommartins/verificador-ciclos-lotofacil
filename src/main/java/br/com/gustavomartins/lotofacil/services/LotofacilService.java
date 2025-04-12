@@ -40,21 +40,6 @@ public class LotofacilService implements Modalidade {
             }
 
             switch (input.toLowerCase()) {
-                case "1":
-                    getAtualCiclo(ciclos.size() + 1, numerosNaoSorteados);
-                    break;
-                case "2":
-                    getUltimosSorteios(concursos);
-                    break;
-                case "3":
-                    getSorteioSelecionado(concursos);
-                    break;
-                case "help":
-                    out.println("Comandos disponíveis: 1, 2, help, sair");
-                    break;
-                default:
-                    out.println("Comando não reconhecido: " + input);
-                    break;
                 case "1" -> getAtualCiclo(ciclos.size() + 1, numerosNaoSorteados);
                 case "2" -> getUltimosSorteios(concursos);
                 case "3" -> getSorteioSelecionado(concursos);
