@@ -1,6 +1,7 @@
 package br.com.gustavomartins.lotofacil.services;
 
 import br.com.gustavomartins.lotofacil.services.interfaces.Modalidade;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -28,6 +29,7 @@ public class LotofacilService implements Modalidade {
         out.println("1 - Ciclo atual");
         out.println("2 - últimos 5 sorteios");
         out.println("3 - Selecione um sorteio em específico");
+        out.println("4 - Gera um jogo aleatório para a Lotofácil");
         out.println("Digite 'sair' para encerrar o programa.");
 
         while (true) {
@@ -43,6 +45,12 @@ public class LotofacilService implements Modalidade {
                 case "1" -> getAtualCiclo(ciclos.size() + 1, numerosNaoSorteados);
                 case "2" -> getUltimosSorteios(concursos);
                 case "3" -> getSorteioSelecionado(concursos);
+                case "4" -> {
+                    out.println("Quantos jogos você gostaria de gerar?");
+                    out.print("> ");
+                    String quantidade = scanner.nextLine().trim();
+                    geraJogosAleatorios(Integer.parseInt(quantidade));
+                }
                 case "help" -> out.println("Comandos disponíveis: 1, 2, help, sair");
                 default -> out.println("Comando não reconhecido: " + input);
             }
@@ -68,6 +76,25 @@ public class LotofacilService implements Modalidade {
         }   catch (IOException ex){
             out.print(ex.getMessage());
         }
+    }
+
+    @Override
+    public void geraJogosAleatorios(int quantidade) {
+        ArrayList<Set<Integer>> listaDeJogos = new ArrayList<>();
+        while (listaDeJogos.size() < quantidade) {
+            listaDeJogos.add(geraJogoAleatorio());
+        }
+        out.println("Os jogos aleatórios gerados são: ");
+        listaDeJogos.forEach(out::println);
+    }
+
+    private Set<Integer> geraJogoAleatorio() {
+        Random gerador = new Random();
+        Set<Integer> jogoAleatorio = new HashSet<>();
+        while (jogoAleatorio.size() < 15){
+            jogoAleatorio.add(gerador.nextInt(1,26));
+        }
+        return jogoAleatorio;
     }
 
     private static void mapConcursos(Sheet sheet) {

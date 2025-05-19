@@ -13,6 +13,8 @@ public interface Modalidade {
 
     void leituraExcel();
 
+    void geraJogosAleatorios(int quantidade);
+
     default void getUltimosSorteios(Map<Integer, List<Integer>> concursos) {
         out.println("Buscando os 5 últimos sorteios...");
         out.println("-".repeat(78));
