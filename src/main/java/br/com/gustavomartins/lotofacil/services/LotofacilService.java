@@ -17,10 +17,10 @@ public class LotofacilService implements Modalidade {
     private static final Map<Integer, List<Integer>> concursos = new TreeMap<>();
     private static final Map<Integer, Integer> ciclos = new TreeMap<>();
     private static final HashSet<Integer> numerosNaoSorteados = new HashSet<>(createSetNumerosNaoSorteados());
+    private final Scanner scanner = new Scanner(in);
 
     @Override
     public void funcionalidades() {
-        Scanner scanner = new Scanner(in);
         leituraExcel();
 
         out.println("Bem-vindo ao menu da Lotofácil!");
@@ -28,7 +28,8 @@ public class LotofacilService implements Modalidade {
         out.println("1 - Ciclo atual");
         out.println("2 - últimos 5 sorteios");
         out.println("3 - Selecione um sorteio em específico");
-        out.println("4 - Gera um jogo aleatório para a Lotofácil");
+        out.println("4 - Seleciona sorteios fatiados por exemplo 4 ao 8");
+        out.println("5 - Gera um jogo aleatório para a Lotofácil");
         out.println("Digite 'sair' para encerrar o programa.");
 
         while (true) {
@@ -44,7 +45,8 @@ public class LotofacilService implements Modalidade {
                 case "1" -> getAtualCiclo(ciclos.size() + 1, numerosNaoSorteados);
                 case "2" -> getUltimosSorteios(concursos);
                 case "3" -> getSorteioSelecionado(concursos);
-                case "4" -> {
+                case "4" -> getConcursosFatiados();
+                case "5" -> {
                     out.println("Quantos jogos você gostaria de gerar?");
                     out.print("> ");
                     String quantidade = scanner.nextLine().trim();
@@ -94,6 +96,16 @@ public class LotofacilService implements Modalidade {
             jogoAleatorio.add(gerador.nextInt(1,26));
         }
         return jogoAleatorio;
+    }
+
+    private void getConcursosFatiados(){
+        out.println("Qual seria o sorteio que gostaria de mapear inicialmente?");
+        out.print("> ");
+        String concursoInicial = scanner.nextLine().trim();
+        out.println("até qual concurso você gostaria de visualizar?");
+        out.print("> ");
+        String concursoFinal = scanner.nextLine().trim();
+        fatiarConcursos(concursos, Integer.parseInt(concursoInicial), Integer.parseInt(concursoFinal));
     }
 
     private static void mapConcursos(Sheet sheet) {

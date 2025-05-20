@@ -15,6 +15,16 @@ public interface Modalidade {
 
     void geraJogosAleatorios(int quantidade);
 
+    default void fatiarConcursos(Map<Integer, List<Integer>> concursos, Integer sorteioInicial, Integer sorteioFinal){
+        out.println(String.format("Buscando do sorteio %s até %s", sorteioInicial, sorteioFinal));
+        out.println("-".repeat(78));
+        while (sorteioInicial <= sorteioFinal){
+            out.println(StringUtils.rightPad(String.format("| Concurso: %s | %s ", sorteioInicial, concursos.get(sorteioInicial)),77) + "|");
+            out.println("-".repeat(78));
+            sorteioInicial++;
+        }
+    }
+
     default void getUltimosSorteios(Map<Integer, List<Integer>> concursos) {
         out.println("Buscando os 5 últimos sorteios...");
         out.println("-".repeat(78));
