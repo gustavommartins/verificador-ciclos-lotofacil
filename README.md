@@ -13,10 +13,10 @@ Nela, é possível visualizar o último ciclo completo e o ciclo em andamento. V
 - [x] Gerar tabela de ciclos da Lotofácil;
 - [x] Listar os últimos 5 concursos;
 - [x] Listar concursos separadamente;
-- [ ] Listar quantidade que quiser de concursos ajustando o tamanho da lista e escolhendo entre qual concursos gostaria de buscar;
+- [x] Listar quantidade que quiser de concursos ajustando o tamanho da lista e escolhendo entre qual concursos gostaria de buscar;
 - [x] Baixar automaticamente a planilha da Lotofácil diretamente do site da Caixa;
-- [ ] Gerar jogos baseados nos números faltantes do ciclo;
 - [x] Gerar jogos aleatórios para serem jogados;
+- [ ] Gerar jogos baseados nos números faltantes do ciclo;
 - [ ] Exportar jogos gerados para um arquivo.
 
 ## Como usar
