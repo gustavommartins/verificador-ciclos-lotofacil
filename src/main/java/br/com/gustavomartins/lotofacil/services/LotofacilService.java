@@ -16,13 +16,26 @@ public class LotofacilService implements Modalidade {
 
     private static final Map<Integer, List<Integer>> concursos = new TreeMap<>();
     private static final Map<Integer, Integer> ciclos = new TreeMap<>();
-    private static final HashSet<Integer> numerosNaoSorteados = new HashSet<>(createSetNumerosNaoSorteados());
+    private static final Set<Integer> numerosNaoSorteados = new HashSet<>(createSetNumerosNaoSorteados());
     private final Scanner scanner = new Scanner(in);
 
     @Override
     public void funcionalidades() {
         leituraExcel();
+        exibirMenu();
 
+        while (true) {
+            out.print("> ");
+            String input = scanner.nextLine().trim();
+            if ("menu".equalsIgnoreCase(input)) {
+                out.println("Retornando ao menu principal...");
+                return;
+            }
+            processarComando(input);
+        }
+    }
+
+    private void exibirMenu() {
         out.println("Bem-vindo ao menu da Lotofácil!");
         out.println("Digite apenas o número da funcionalidade:");
         out.println("1 - Ciclo atual");
@@ -30,58 +43,52 @@ public class LotofacilService implements Modalidade {
         out.println("3 - Selecione um sorteio em específico");
         out.println("4 - Seleciona sorteios fatiados por exemplo 4 ao 8");
         out.println("5 - Gera um jogo aleatório para a Lotofácil");
-        out.println("Digite 'sair' para encerrar o programa.");
+        out.println("Digite 'menu' para retornar ao menu principal.");
+    }
 
-        while (true) {
-            out.print("> ");
-            String input = scanner.nextLine().trim();
-
-            if ("sair".equalsIgnoreCase(input)) {
-                out.println("Encerrando...");
-                break;
-            }
-
-            switch (input.toLowerCase()) {
-                case "1" -> getAtualCiclo(ciclos.size() + 1, numerosNaoSorteados);
-                case "2" -> getUltimosSorteios(concursos);
-                case "3" -> getSorteioSelecionado(concursos);
-                case "4" -> getConcursosFatiados();
-                case "5" -> {
-                    out.println("Quantos jogos você gostaria de gerar?");
-                    out.print("> ");
-                    String quantidade = scanner.nextLine().trim();
-                    geraJogosAleatorios(Integer.parseInt(quantidade));
-                }
-                case "help" -> out.println("Comandos disponíveis: 1, 2, help, sair");
-                default -> out.println("Comando não reconhecido: " + input);
-            }
+    private void processarComando(String input) {
+        switch (input.toLowerCase()) {
+            case "1" -> getAtualCiclo(ciclos.size() + 1, numerosNaoSorteados);
+            case "2" -> getUltimosSorteios(concursos);
+            case "3" -> getSorteioSelecionado(concursos);
+            case "4" -> getConcursosFatiados();
+            case "5" -> solicitarQuantidadeJogos();
+            case "help" -> out.println("Comandos disponíveis: 1, 2, 3, 4, 5, help, sair");
+            default -> out.println("Comando não reconhecido: " + input);
         }
-        scanner.close();
+    }
+
+    private void solicitarQuantidadeJogos() {
+        out.println("Quantos jogos você gostaria de gerar?");
+        out.print("> ");
+        try {
+            int quantidade = Integer.parseInt(scanner.nextLine().trim());
+            geraJogosAleatorios(quantidade);
+        } catch (NumberFormatException e) {
+            out.println("Quantidade inválida.");
+        }
     }
 
     @Override
-    public void leituraExcel(){
-        if(!concursos.isEmpty()){
-            return;
-        }
+    public void leituraExcel() {
+        if (!concursos.isEmpty()) return;
 
         new DownloadService().downloadFile();
-
         String input = "./src/main/resources/loteria/lotofacil.xlsx";
 
-        try(FileInputStream file = new FileInputStream(input);
-            Workbook workbook = new XSSFWorkbook(file)){
+        try (FileInputStream file = new FileInputStream(input);
+             Workbook workbook = new XSSFWorkbook(file)) {
             Sheet sheet = workbook.getSheetAt(0);
             mapConcursos(sheet);
             leituraCiclos();
-        }   catch (IOException ex){
+        } catch (IOException ex) {
             out.print(ex.getMessage());
         }
     }
 
     @Override
     public void geraJogosAleatorios(int quantidade) {
-        ArrayList<Set<Integer>> listaDeJogos = new ArrayList<>();
+        List<Set<Integer>> listaDeJogos = new ArrayList<>();
         while (listaDeJogos.size() < quantidade) {
             listaDeJogos.add(geraJogoAleatorio());
         }
@@ -92,29 +99,36 @@ public class LotofacilService implements Modalidade {
     private Set<Integer> geraJogoAleatorio() {
         Random gerador = new Random();
         Set<Integer> jogoAleatorio = new HashSet<>();
-        while (jogoAleatorio.size() < 15){
-            jogoAleatorio.add(gerador.nextInt(1,26));
+        while (jogoAleatorio.size() < 15) {
+            jogoAleatorio.add(gerador.nextInt(1, 26));
         }
         return jogoAleatorio;
     }
 
-    private void getConcursosFatiados(){
-        out.println("Qual seria o sorteio que gostaria de mapear inicialmente?");
+    private void getConcursosFatiados() {
+        int concursoInicial = solicitarNumero("Qual seria o sorteio que gostaria de mapear inicialmente?");
+        int concursoFinal = solicitarNumero("Até qual concurso você gostaria de visualizar?");
+        fatiarConcursos(concursos, concursoInicial, concursoFinal);
+    }
+
+    private int solicitarNumero(String mensagem) {
+        out.println(mensagem);
         out.print("> ");
-        String concursoInicial = scanner.nextLine().trim();
-        out.println("até qual concurso você gostaria de visualizar?");
-        out.print("> ");
-        String concursoFinal = scanner.nextLine().trim();
-        fatiarConcursos(concursos, Integer.parseInt(concursoInicial), Integer.parseInt(concursoFinal));
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            out.println("Valor inválido. Tente novamente.");
+            return solicitarNumero(mensagem);
+        }
     }
 
     private static void mapConcursos(Sheet sheet) {
         sheet.iterator().forEachRemaining(row -> {
-            if(row.getRowNum() == 0) return;
+            if (row.getRowNum() == 0) return;
             List<Integer> numerosSorteados = new ArrayList<>();
             row.cellIterator().forEachRemaining(cell -> {
-                if(numerosSorteados.size() == 15) return;
-                if(String.valueOf(cell.getColumnIndex()).matches("^(1[0-6]|[23456789])$")){
+                if (numerosSorteados.size() == 15) return;
+                if (cell.getColumnIndex() >= 2 && cell.getColumnIndex() <= 16) {
                     numerosSorteados.add((int) cell.getNumericCellValue());
                 }
             });
@@ -132,12 +146,12 @@ public class LotofacilService implements Modalidade {
         });
     }
 
-    private static HashSet<Integer> createSetNumerosNaoSorteados() {
-        return new HashSet<>(Arrays.asList(
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25
-        ));
+    private static Set<Integer> createSetNumerosNaoSorteados() {
+        Set<Integer> numeros = new HashSet<>();
+        for (int i = 1; i <= 25; i++) {
+            numeros.add(i);
+        }
+        return numeros;
     }
 
 

@@ -16,7 +16,7 @@ public interface Modalidade {
     void geraJogosAleatorios(int quantidade);
 
     default void fatiarConcursos(Map<Integer, List<Integer>> concursos, Integer sorteioInicial, Integer sorteioFinal){
-        out.println(String.format("Buscando do sorteio %s até %s", sorteioInicial, sorteioFinal));
+        out.printf("Buscando do sorteio %s até %s%n", sorteioInicial, sorteioFinal);
         out.println("-".repeat(78));
         while (sorteioInicial <= sorteioFinal){
             out.println(StringUtils.rightPad(String.format("| Concurso: %s | %s ", sorteioInicial, concursos.get(sorteioInicial)),77) + "|");
@@ -54,9 +54,9 @@ public interface Modalidade {
         } catch (Exception ex) {
             out.println("Não foi possível pesquisar pelo sorteio selecionado!");
         }
-    };
+    }
 
-    default void getAtualCiclo(int ciclo, HashSet<Integer> numerosNaoSorteados) {
+    default void getAtualCiclo(int ciclo, Set<Integer> numerosNaoSorteados) {
         out.printf("Números que ainda faltam a ser sorteados no atual ciclo (%s) = %s%n", ciclo, numerosNaoSorteados);
     }
 
