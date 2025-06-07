@@ -27,15 +27,12 @@ public class LotofacilService implements Modalidade {
         while (true) {
             out.print("> ");
             String input = scanner.nextLine().trim();
-
-            if ("sair".equalsIgnoreCase(input)) {
-                out.println("Encerrando...");
-                break;
+            if ("menu".equalsIgnoreCase(input)) {
+                out.println("Retornando ao menu principal...");
+                return;
             }
-
             processarComando(input);
         }
-        scanner.close();
     }
 
     private void exibirMenu() {
@@ -46,7 +43,7 @@ public class LotofacilService implements Modalidade {
         out.println("3 - Selecione um sorteio em específico");
         out.println("4 - Seleciona sorteios fatiados por exemplo 4 ao 8");
         out.println("5 - Gera um jogo aleatório para a Lotofácil");
-        out.println("Digite 'sair' para encerrar o programa.");
+        out.println("Digite 'menu' para retornar ao menu principal.");
     }
 
     private void processarComando(String input) {
