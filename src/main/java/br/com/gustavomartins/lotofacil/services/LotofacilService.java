@@ -42,7 +42,7 @@ public class LotofacilService implements Modalidade {
         out.println("2 - últimos 5 sorteios");
         out.println("3 - Selecione um sorteio em específico");
         out.println("4 - Seleciona sorteios fatiados por exemplo 4 ao 8");
-        out.println("5 - Gera um jogo aleatório para a Lotofácil");
+        out.println("5 - Gere jogos aleatórios para a Lotofácil");
         out.println("Digite 'menu' para retornar ao menu principal.");
     }
 
@@ -63,9 +63,26 @@ public class LotofacilService implements Modalidade {
         out.print("> ");
         try {
             int quantidade = Integer.parseInt(scanner.nextLine().trim());
-            geraJogosAleatorios(quantidade);
+
+            out.println("Gostaria de gerar com os números faltantes do ciclo atual? (s/n)");
+            out.print("> ");
+            String resposta = scanner.nextLine().trim().toLowerCase();
+
+            geraJogos(resposta, quantidade);
         } catch (NumberFormatException e) {
             out.println("Quantidade inválida.");
+        }
+    }
+
+    private void geraJogos(String resposta, int quantidade) {
+        if ("s".equals(resposta)) {
+            out.println("Gerando jogos aleatórios com os números faltantes do ciclo atual...");
+            geraJogosAleatoriosComNumerosFaltantes(quantidade);
+        } else if ("n".equals(resposta)) {
+            out.println("Gerando jogos aleatórios com números aleatórios...");
+            geraJogosAleatorios(quantidade);
+        } else {
+            out.println("Resposta inválida. Por favor, responda com 's' ou 'n'.");
         }
     }
 
@@ -94,6 +111,30 @@ public class LotofacilService implements Modalidade {
         }
         out.println("Os jogos aleatórios gerados são: ");
         listaDeJogos.forEach(out::println);
+    }
+
+    @Override
+    public void geraJogosAleatoriosComNumerosFaltantes(int quantidade) {
+        List<Set<Integer>> listaDeJogos = new ArrayList<>();
+        while (listaDeJogos.size() < quantidade) {
+            Set<Integer> jogoAleatorio = new HashSet<>(obterPrimeirosNumerosFaltantes());
+            if (jogoAleatorio.size() >= 15) {
+                listaDeJogos.add(jogoAleatorio);
+            } else {
+                break;
+            }
+        }
+        out.println("Os jogos aleatórios gerados são: ");
+        listaDeJogos.forEach(out::println);
+    }
+
+    private Set<Integer> obterPrimeirosNumerosFaltantes() {
+        List<Integer> listaFaltantes = new ArrayList<>(numerosNaoSorteados);
+        Set<Integer> primeiros = new LinkedHashSet<>();
+        for (int i = 0; i < 15; i++) {
+            primeiros.add(listaFaltantes.get(i));
+        }
+        return primeiros;
     }
 
     private Set<Integer> geraJogoAleatorio() {

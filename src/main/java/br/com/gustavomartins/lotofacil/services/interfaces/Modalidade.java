@@ -15,6 +15,8 @@ public interface Modalidade {
 
     void geraJogosAleatorios(int quantidade);
 
+    void geraJogosAleatoriosComNumerosFaltantes(int quantidade);
+
     default void fatiarConcursos(Map<Integer, List<Integer>> concursos, Integer sorteioInicial, Integer sorteioFinal){
         out.printf("Buscando do sorteio %s até %s%n", sorteioInicial, sorteioFinal);
         out.println("-".repeat(78));
